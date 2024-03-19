@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
     private void RotateBall()
     {
         xInput = Input.GetAxis("Horizontal");
-        cueBall.transform.Rotate(new Vector3(0f, xInput, 0f));
+        cueBall.transform.Rotate(new Vector3(0f, xInput/3, 0f));
     }
 
     private void ShootBall()
@@ -51,12 +51,32 @@ public class GameManager : MonoBehaviour
         ballLine.SetActive(false);
     }
 
+    private void CameraBehindCueBall()
+    {
+        camera.transform.parent = cueBall.transform;
+        camera.transform.position = cueBall.transform.position
+                                    + new Vector3(0f, 7f, -10f);
+    }
+
+    private void StopBall()
+    {
+        Rigidbody rb =cueBall.GetComponent<Rigidbody>();
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        cueBall.transform.eulerAngles = Vector3.zero;
+
+        CameraBehindCueBall();
+        camera.transform.eulerAngles = new Vector3(30f, 0f, 0f);
+        ballLine.SetActive(true);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         instance = this;
 
         camera = Camera.main.gameObject;
+        CameraBehindCueBall();
 
         SetBall(BallColor.Red, 1);
         SetBall(BallColor.Yellow, 2);
@@ -74,5 +94,7 @@ public class GameManager : MonoBehaviour
         RotateBall();
         if (Input.GetKeyDown(KeyCode.Space))
             ShootBall();
+        if (Input.GetKeyDown(KeyCode.Backspace))
+            StopBall();
     }
 }
