@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -26,6 +27,10 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private GameObject camera;
+
+    [SerializeField]
+    private TMP_Text scoreText;
+
 
     private void SetBall(BallColor col, int i)
     {
@@ -70,10 +75,17 @@ public class GameManager : MonoBehaviour
         ballLine.SetActive(true);
     }
 
+    public void UpdateScoreText()
+    {
+        scoreText.text = $"Player Score: {playerScore}";
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         instance = this;
+
+        UpdateScoreText();
 
         camera = Camera.main.gameObject;
         CameraBehindCueBall();
