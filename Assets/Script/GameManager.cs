@@ -1,13 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
     private int playerScore;
-    public int PlayerScore { get { return playerScore; } set {  playerScore = value; } }
+    public int PlayerScore { get { return playerScore; } set { playerScore = value; } }
 
     [SerializeField]
     private GameObject ballPrefab;
@@ -19,7 +18,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private GameObject cueBall;
-    [SerializeField] 
+    [SerializeField]
     private GameObject ballLine;
 
     [SerializeField]
@@ -34,7 +33,7 @@ public class GameManager : MonoBehaviour
 
     private void SetBall(BallColor col, int i)
     {
-        GameObject obj = Instantiate(ballPrefab ,
+        GameObject obj = Instantiate(ballPrefab,
                                      ballPosition[i].transform.position,
                                      Quaternion.identity);
 
@@ -45,7 +44,7 @@ public class GameManager : MonoBehaviour
     private void RotateBall()
     {
         xInput = Input.GetAxis("Horizontal");
-        cueBall.transform.Rotate(new Vector3(0f, xInput/3, 0f));
+        cueBall.transform.Rotate(new Vector3(0f, xInput, 0f));
     }
 
     private void ShootBall()
@@ -59,13 +58,12 @@ public class GameManager : MonoBehaviour
     private void CameraBehindCueBall()
     {
         camera.transform.parent = cueBall.transform;
-        camera.transform.position = cueBall.transform.position
-                                    + new Vector3(0f, 7f, -10f);
+        camera.transform.position = cueBall.transform.position + new Vector3(0f, 7f, -10f);
     }
 
     private void StopBall()
     {
-        Rigidbody rb =cueBall.GetComponent<Rigidbody>();
+        Rigidbody rb = cueBall.GetComponent<Rigidbody>();
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         cueBall.transform.eulerAngles = Vector3.zero;
@@ -78,6 +76,15 @@ public class GameManager : MonoBehaviour
     public void UpdateScoreText()
     {
         scoreText.text = $"Player Score: {playerScore}";
+        if (playerScore >= 15)
+        {
+            ChangeToScenesWin();
+        }
+    }
+
+    public void ChangeToScenesWin()
+    {
+        SceneManager.LoadScene("ScenesWin");
     }
 
     // Start is called before the first frame update
