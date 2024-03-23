@@ -51,7 +51,11 @@ public class GameManager : MonoBehaviour
     {
         camera.transform.parent = null;
         Rigidbody rb = cueBall.GetComponent<Rigidbody>();
-        rb.AddRelativeForce(Vector3.forward * 50, ForceMode.Impulse);
+
+        //f=ma
+        float a = 50f;
+        float f = rb.mass * a;
+        rb.AddRelativeForce(Vector3.forward * f, ForceMode.Impulse);
         ballLine.SetActive(false);
     }
 
