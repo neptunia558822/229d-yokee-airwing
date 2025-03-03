@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private TMP_Text scoreText;
 
+    public Vector3 cueBallStartPosition;
 
     private void SetBall(BallColor col, int i)
     {
@@ -65,7 +66,7 @@ public class GameManager : MonoBehaviour
         camera.transform.position = cueBall.transform.position + new Vector3(0f, 7f, -10f);
     }
 
-    private void StopBall()
+    public void StopBall()
     {
         Rigidbody rb = cueBall.GetComponent<Rigidbody>();
         rb.velocity = Vector3.zero;
@@ -95,7 +96,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         instance = this;
-
+        cueBallStartPosition = cueBall.transform.position; // บันทึกตำแหน่งเริ่มต้นของลูกขาว
         UpdateScoreText();
 
         camera = Camera.main.gameObject;
