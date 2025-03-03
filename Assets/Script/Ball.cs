@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,12 +22,14 @@ public class Ball : MonoBehaviour
 
     [SerializeField]
     private BallColor ballColor;
+    public BallColor BallColor { get { return ballColor; } }
 
     [SerializeField]
     private MeshRenderer rd;
 
     public void SetColorAndPoint(BallColor col)
     {
+        ballColor = col; // ✅ บันทึกค่าสีของลูกบอล
         switch (col)
         {
             case BallColor.White:
@@ -48,7 +50,7 @@ public class Ball : MonoBehaviour
                 break;
             case BallColor.Brown:
                 point = 4;
-                rd.material.color = new Color32 (255, 123, 0, 255);
+                rd.material.color = new Color32(255, 123, 0, 255);
                 break;
             case BallColor.Blue:
                 point = 5;
@@ -56,7 +58,7 @@ public class Ball : MonoBehaviour
                 break;
             case BallColor.Pink:
                 point = 6;
-                rd.material.color = new Color32 (255, 105, 224, 255);
+                rd.material.color = new Color32(255, 105, 224, 255);
                 break;
             case BallColor.Black:
                 point = 7;
@@ -64,6 +66,7 @@ public class Ball : MonoBehaviour
                 break;
         }
     }
+
 
     void Awake()
     {

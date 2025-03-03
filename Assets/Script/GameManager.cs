@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -32,6 +32,48 @@ public class GameManager : MonoBehaviour
 
     public Vector3 cueBallStartPosition;
 
+    private bool canShoot = true;
+
+    public static BallColor[] correctOrder = {
+    BallColor.Red, BallColor.Yellow, BallColor.Green, BallColor.Brown,
+    BallColor.Blue, BallColor.Pink, BallColor.Black
+    };
+
+    public static int currentBallIndex = 0;
+
+    private bool isResetting = false; // ✅ ตัวแปรกันรีเซ็ตซ้ำ
+
+    public void ResetGame()
+    {
+        if (isResetting) return; // ✅ ถ้าเกมกำลังรีเซ็ตอยู่แล้ว ไม่ต้องทำซ้ำ
+        isResetting = true;
+
+        playerScore = 0;
+        UpdateScoreText();
+        currentBallIndex = 0;
+        ResetCueBall();
+
+        isResetting = false; // ✅ รีเซ็ตเสร็จแล้ว อนุญาตให้รีเซ็ตใหม่
+    }
+
+
+    public void ResetCueBall()
+    {
+        cueBall.transform.position = cueBallStartPosition; // ย้ายลูกขาวไปตำแหน่งเริ่มต้น
+        cueBall.transform.rotation = Quaternion.identity; // รีเซ็ตการหมุนของลูกขาว
+        Rigidbody rb = cueBall.GetComponent<Rigidbody>();
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        CameraBehindCueBall(); // กล้องกลับไปหลังลูกขาว
+
+        camera.transform.eulerAngles = new Vector3(30f, 0f, 0f); // รีเซ็ตมุมกล้อง
+        camera.transform.position = cueBall.transform.position + new Vector3(0f, 7f, -10f);
+
+        ballLine.SetActive(true); // แสดงเส้นเล็ง
+        canShoot = true; // อนุญาตให้ยิงใหม่
+    }
+
     private void SetBall(BallColor col, int i)
     {
         GameObject obj = Instantiate(ballPrefab,
@@ -50,20 +92,24 @@ public class GameManager : MonoBehaviour
 
     private void ShootBall()
     {
+        if (!canShoot) return; // ถ้ายิงไปแล้ว ห้ามยิงซ้ำ
+
         camera.transform.parent = null;
         Rigidbody rb = cueBall.GetComponent<Rigidbody>();
 
-        //f=ma
         float a = 50f;
         float f = rb.mass * a;
         rb.AddRelativeForce(Vector3.forward * f, ForceMode.Impulse);
         ballLine.SetActive(false);
+
+        canShoot = false; // ป้องกันการยิงซ้ำ
     }
 
     private void CameraBehindCueBall()
     {
-        camera.transform.parent = cueBall.transform;
+        camera.transform.parent = cueBall.transform; // ตั้งให้กล้องตามลูกขาว
         camera.transform.position = cueBall.transform.position + new Vector3(0f, 7f, -10f);
+        camera.transform.eulerAngles = new Vector3(30f, 0f, 0f); // ตั้งมุมกล้องให้ถูกต้อง
     }
 
     public void StopBall()
@@ -76,6 +122,8 @@ public class GameManager : MonoBehaviour
         CameraBehindCueBall();
         camera.transform.eulerAngles = new Vector3(30f, 0f, 0f);
         ballLine.SetActive(true);
+
+        canShoot = true; // อนุญาตให้ยิงได้อีกครั้ง
     }
 
     public void UpdateScoreText()
@@ -96,7 +144,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         instance = this;
-        cueBallStartPosition = cueBall.transform.position; // �ѹ�֡���˹�������鹢ͧ�١���
+        cueBallStartPosition = cueBall.transform.position; // บันทึกตำแหน่งเริ่มต้นของลูกขาว
         UpdateScoreText();
 
         camera = Camera.main.gameObject;
@@ -116,9 +164,14 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         RotateBall();
+
         if (Input.GetKeyDown(KeyCode.Space))
             ShootBall();
+
         if (Input.GetKeyDown(KeyCode.Backspace))
             StopBall();
+
+        if (Input.GetKeyDown(KeyCode.R)) // ✅ เช็กว่าเป็นการกดครั้งเดียว
+            ResetCueBall(); // รีเซ็ตเฉพาะลูกขาว
     }
 }
